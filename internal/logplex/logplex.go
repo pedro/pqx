@@ -124,8 +124,12 @@ func (w *logfWriter) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
+var mu sync.Mutex
+
 func LogfFromWriter(w io.Writer) func(string, ...any) {
 	return func(format string, args ...any) {
+		mu.Lock()
+		defer mu.Unlock()
 		fmt.Fprintf(w, format, args...)
 	}
 }
